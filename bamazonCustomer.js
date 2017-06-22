@@ -21,7 +21,6 @@ connection.connect(function (err) {
 	}
 	//console.log("connected as id " + connection.threadId);
 	displayItems();
-	purchasePrompt();
 });
 
 function displayItems() {
@@ -40,7 +39,7 @@ function displayItems() {
 
 		for (var i = 0; i < res.length; i++) {
 			console.log(
-				res[i].item_id + "    ||    " +
+				res[i].item_id + "             ||    " +
 				res[i].product_name + "    ||    " +
 				res[i].department_name + "    ||    " +
 				res[i].price + "    ||    " +
@@ -48,6 +47,7 @@ function displayItems() {
 				"\n-------------------------------------------------------------------------------------"
 			);
 		}
+		purchasePrompt();
 		/*
 		for (var i = 0; i < res.length; i++) {
 			table.push(
@@ -62,11 +62,43 @@ function displayItems() {
 function purchasePrompt() {
 	inquirer.prompt([
 		{
-			name: "item purchase",
+			name: "item",
 			type: "input",
 			message: "Enter the ID of the item you want to buy"
+		},
+		{
+			name: "itemqty",
+			type: "input",
+			message: "Enter the amount of the item you'd like to buy"
 		}
 	]).then(function (answer) {
-		console.log(answer);
+		//console.log(answer.item);
+		//console.log(answer.itemqty);
+		connection.query("SELECT * FROM products WHERE item_id=?", [answer.item], function (err, res) {
+			if (err) {
+				throw err;
+			}
+			console.log(res[0].product_name);
+			if (res[0].stock_quantity - answer.itemqty < 0) {
+				console.log("We do not have enough stock on hand to fulfill your order.");
+				console.log("Stock on hand: " + res[0].stock_quantity + "\nYour requested qty: " + answer.itemqty);
+				displayItems();
+			}else {
+				var updatedQty = res[0].stock_quantity - answer.itemqty;
+				//console.log(answer.item);
+				changeQty(answer.item, updatedQty);
+			}
+		});
 	});
+}
+
+function changeQty(orderQty, updatedQty) {
+	connection.query("UPDATE products SET stock_quantity=? WHERE item_id=?",[updatedQty, orderQty], function (err, res) {
+		if (err) {
+			throw err;
+		}
+		console.log("Your order was placed!");
+		//console.log("New stock on hand: " + res[0].stock_quantity);
+	});
+	displayItems();
 }
