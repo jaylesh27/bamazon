@@ -78,26 +78,27 @@ function purchasePrompt() {
 			if (err) {
 				throw err;
 			}
-			console.log(res[0].product_name);
+			//console.log(res[0].product_name);
 			if (res[0].stock_quantity - answer.itemqty < 0) {
 				console.log("We do not have enough stock on hand to fulfill your order.");
 				console.log("Stock on hand: " + res[0].stock_quantity + "\nYour requested qty: " + answer.itemqty);
 				displayItems();
 			}else {
 				var updatedQty = res[0].stock_quantity - answer.itemqty;
+				var orderCost = answer.itemqty * res[0].price;
 				//console.log(answer.item);
-				changeQty(answer.item, updatedQty);
+				changeQty(answer.item, updatedQty, orderCost);
 			}
 		});
 	});
 }
 
-function changeQty(orderQty, updatedQty) {
+function changeQty(orderQty, updatedQty, orderCost) {
 	connection.query("UPDATE products SET stock_quantity=? WHERE item_id=?",[updatedQty, orderQty], function (err, res) {
 		if (err) {
 			throw err;
 		}
-		console.log("Your order was placed!");
+		console.log("Your order was placed, your total is $" + orderCost);
 		//console.log("New stock on hand: " + res[0].stock_quantity);
 	});
 	displayItems();
