@@ -58,7 +58,7 @@ VALUES ("ground coffee", "food", 20, 1200);
 SELECT * FROM products;
 ```
 4. You will be prompted to choose the item you'd like to purchase (by item id) and enter the quantity you'd like to purchase as well.
-![Image of order screen](images/image-one.png?raw=true)
+![Image of order screen](https://github.com/jaylesh27/bamazon/blob/master/images/image-one.PNG)
 5. If there is sufficient quantity on hand for the purchase, the order will go through successfully and you will be notified of your total order cost.
 6. If the quantity you'd like exceeds the quantity on hand, you will be notified that we don't have sufficient qty on hand to complete the order.
 7. Whether there is enough stock or isn't, you will be returned to the main display of the table of items.
